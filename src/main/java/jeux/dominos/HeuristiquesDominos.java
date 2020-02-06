@@ -10,16 +10,14 @@ public class HeuristiquesDominos{
 	public static  Heuristique hblanc = new Heuristique(){
 				
 		public int eval(PlateauJeu p, Joueur j){
-			/*A COMPLETER*/
-			return 0;
+			return ((PlateauDominos) p).nbCoupsBlanc() - ((PlateauDominos) p).nbCoupsNoir();
 		}
 	};
 
 	public static  Heuristique hnoir = new Heuristique(){
 	
 		public int eval(PlateauJeu p, Joueur j){
-			/*A COMPLETER*/
-			return 0;
+			return ((PlateauDominos) p).nbCoupsNoir() - ((PlateauDominos) p).nbCoupsBlanc();
 		}
 	};
 
