@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 package iia.jeux.alg;
@@ -16,19 +16,19 @@ public class Minimax implements AlgoJeu {
      */
     private final static int PROFMAXDEFAUT = 4;
 
-   
+
     // -------------------------------------------
     // Attributs
     // -------------------------------------------
- 
+
     /**  La profondeur de recherche utilisée pour l'algorithme
      */
     private int profMax = PROFMAXDEFAUT;
 
      /**  L'heuristique utilisée par l'algorithme
       */
-   private Heuristique h;
 
+      private Heuristique h;
     /** Le joueur Min
      *  (l'adversaire) */
     private Joueur joueurMin;
@@ -83,5 +83,23 @@ public class Minimax implements AlgoJeu {
   // -------------------------------------------
 
     //A vous de jouer pour implanter Minimax
+
+    /**
+    *   Indique si un plateau correspond a une fin de Partie
+    *   @param p le plateau qu'on evalue
+    *   @return Le plateau correspond a une situation de fin de partie ou pas
+    **/
+    public boolean endGame(PlateauJeu p){
+      p.finDePartie();
+    }
+
+    public int maxMin(PlateauJeu p){
+      if (p.endGame() == true) {
+        return this.eval(p,this.joueurMax);
+      }
+      else {
+        
+      }
+    }
 
 }
