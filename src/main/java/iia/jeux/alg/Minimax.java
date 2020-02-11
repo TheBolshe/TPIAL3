@@ -93,24 +93,57 @@ public class Minimax implements AlgoJeu {
       p.finDePartie();
     }
 
-    public int maxMin(PlateauJeu p){
-      if (p.finDePartie() == true) {
-        return this.eval(p, this.joueurMax);
+    // Minimax est une succession de deux fonctions.
+    /**
+    *   Evaluation de la valeur MiniMax du noeud ami
+    *   @param p le plateau correspondant au noeud
+    *   @return Un entier, la valeur max trouvee.
+    **/
+    public int maxMin(PlateauJeu p, int profondeur){
+      // Astuce pour compter le nombre de noeuds
+      this.nbnoeuds++;
+      if (profondeur >= this.profMax || p.finDePartie() == true) {
+        // Astuce pour compter le nombre de feuilles
+        this.nbfeuilles++;
+        return this.h.eval(p, this.joueurMax);
       }
       else {
         int max = String.MIN_VALUE;
         ArrayList<CoupJeu> coupsPossibles = p.lesCoupsPossibles(p.joueurMax);
         for (CoupJeu c : coupsPossibles) {
-          PlateauDominos newCopy = p.copy();
-          newCopy.joue(this.joueurMax,c);
-          max = Math.max(max, minMax(newCopy));
+          PlateauDominos new_copy = p.copy();
+          new_copy.joue(this.joueurMax,c);
+          max = Math.max(max, minMax(new_copy));
         }
         return max;
       }
     }
 
-    public int minMax(PlateauJeu p){
-
+    /**
+    *   Evaluation de la valeur MiniMax du noeud ennemi
+    *   @param p le plateau correspondant au noeud
+    *   @return Un entier, la valeur max trouvee.
+    **/
+    public int minMax(PlateauJeu p, int profondeur){
+      // Astuce pour compter le nombre de noeuds parcourus
+      this.nbnoeuds++;
+      int min = 0;
+      // L'ennemi est en fin de partie (plateau = feuille; joueur = ennemi)
+      if (profondeur >= this.profMax || p.finDePartie() == true) {
+        // Astuce pour compter le nombre de feuilles
+        this.nbfeuilles++;
+        min = this.h.eval(p. this.joueurMin);
+      }
+      // On simule le coup de ennemi, il doit faire
+      else {
+        ArrayList<CoupJeu> coupsPossibles = p.lesCoupsPossibles(p.joueurMin);
+        for (CoupJeu c: coupsPossibles) {
+          PlateauDominos new_copy = p.copy();
+          new_copy.joue(this.joueurMin,c);
+          min = Math.min(min, maxMin(new_copy, profondeur));
+        }
+        return min
+      }
     }
 
 }
