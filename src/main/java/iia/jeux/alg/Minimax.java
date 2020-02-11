@@ -64,17 +64,36 @@ public class Minimax implements AlgoJeu {
    // -------------------------------------------
   // Méthodes de l'interface AlgoJeu
   // -------------------------------------------
-   public CoupJeu meilleurCoup(PlateauJeu p) {
-        /* A vous de compléter le corps de ce fichier */
-        return null;
+  public CoupJeu meilleurCoup(PlateauJeu p) {
 
+    /* A vous de compléter le corps de ce fichier */
+    ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMax);
+    // On initialise par le premier coup par defaut.
+    CoupJeu meilleur_coup = coups_possibles[0];
+    // Ca va etre la valeur heuristique correspondante au meilleur coup.
+    // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autre
+    int meilleur_score = Integer.MIN_VALUE;
+    int profondeur_initiale = 0;
+    // On n'a pas besoin de faire de copie ici, minMax et maxMin on font deja.
+    int max = minMax(p, profondeur_initiale);
+    for (CoupJeu c : coups_possibles) {
+      PlateauDominos nouvelle_copie = p.copy();
+      nouvelle_copie.joue(this.joueurMin,c);
+      int nouvelle_valeur_max = minMax(nouvelle_copie, profondeur_initiale);
+      if (nouvelle_valeur_max > max) {
+        meilleur_coup = c;
+        max = nouvelle_valeur_max;
+      }
     }
-  // -------------------------------------------
-  // Méthodes publiques
-  // -------------------------------------------
-    public String toString() {
-        return "MiniMax(ProfMax="+profMax+")";
-    }
+    return meilleur_coup;
+   }
+
+   // -------------------------------------------
+   // Méthodes publiques
+   // -------------------------------------------
+   public String toString() {
+     return "MiniMax(ProfMax="+profMax+")";
+   }
 
 
 
@@ -93,7 +112,8 @@ public class Minimax implements AlgoJeu {
       p.finDePartie();
     }
 
-    // Minimax est une succession de deux fonctions.
+    // Minimax est une succession de deux fonctions : maxMin et minMax.
+
     /**
     *   Evaluation de la valeur MiniMax du noeud ami
     *   @param p le plateau correspondant au noeud
@@ -109,8 +129,8 @@ public class Minimax implements AlgoJeu {
       }
       else {
         int max = Integer.MIN_VALUE;
-        ArrayList<CoupJeu> coupsPossibles = p.lesCoupsPossibles(p.joueurMax);
-        for (CoupJeu c : coupsPossibles) {
+        ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMax);
+        for (CoupJeu c : coups_possibles) {
           PlateauDominos new_copy = p.copy();
           new_copy.joue(this.joueurMax,c);
           max = Math.max(max, minMax(new_copy, profondeur++));
@@ -134,11 +154,11 @@ public class Minimax implements AlgoJeu {
         this.nbfeuilles++;
         min = this.h.eval(p. this.joueurMin);
       }
-      // On simule le coup de ennemi, il doit faire
+      // On simule le coup de ennemi, il doit faire son meilleur coup
       else {
         min = Integer.MIN_VALUE;
-        ArrayList<CoupJeu> coupsPossibles = p.lesCoupsPossibles(p.joueurMin);
-        for (CoupJeu c: coupsPossibles) {
+        ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMin);
+        for (CoupJeu c: coups_possibles) {
           PlateauDominos new_copy = p.copy();
           new_copy.joue(this.joueurMin,c);
           min = Math.min(min, maxMin(new_copy, profondeur++));
