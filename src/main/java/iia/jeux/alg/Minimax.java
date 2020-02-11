@@ -108,7 +108,7 @@ public class Minimax implements AlgoJeu {
         return this.h.eval(p, this.joueurMax);
       }
       else {
-        int max = String.MIN_VALUE;
+        int max = Integer.MIN_VALUE;
         ArrayList<CoupJeu> coupsPossibles = p.lesCoupsPossibles(p.joueurMax);
         for (CoupJeu c : coupsPossibles) {
           PlateauDominos new_copy = p.copy();
@@ -136,6 +136,7 @@ public class Minimax implements AlgoJeu {
       }
       // On simule le coup de ennemi, il doit faire
       else {
+        min = Integer.MIN_VALUE;
         ArrayList<CoupJeu> coupsPossibles = p.lesCoupsPossibles(p.joueurMin);
         for (CoupJeu c: coupsPossibles) {
           PlateauDominos new_copy = p.copy();
