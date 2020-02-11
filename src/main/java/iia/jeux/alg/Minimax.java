@@ -94,12 +94,23 @@ public class Minimax implements AlgoJeu {
     }
 
     public int maxMin(PlateauJeu p){
-      if (p.endGame() == true) {
-        return this.eval(p,this.joueurMax);
+      if (p.finDePartie() == true) {
+        return this.eval(p, this.joueurMax);
       }
       else {
-        
+        int max = String.MIN_VALUE;
+        ArrayList<CoupJeu> coupsPossibles = p.lesCoupsPossibles(p.joueurMax);
+        for (CoupJeu c : coupsPossibles) {
+          PlateauDominos newCopy = p.copy();
+          newCopy.joue(this.joueurMax,c);
+          max = Math.max(max, minMax(newCopy));
+        }
+        return max;
       }
+    }
+
+    public int minMax(PlateauJeu p){
+
     }
 
 }
