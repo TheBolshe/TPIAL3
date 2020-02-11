@@ -113,7 +113,7 @@ public class Minimax implements AlgoJeu {
         for (CoupJeu c : coupsPossibles) {
           PlateauDominos new_copy = p.copy();
           new_copy.joue(this.joueurMax,c);
-          max = Math.max(max, minMax(new_copy));
+          max = Math.max(max, minMax(new_copy, profondeur++));
         }
         return max;
       }
@@ -140,7 +140,7 @@ public class Minimax implements AlgoJeu {
         for (CoupJeu c: coupsPossibles) {
           PlateauDominos new_copy = p.copy();
           new_copy.joue(this.joueurMin,c);
-          min = Math.min(min, maxMin(new_copy, profondeur));
+          min = Math.min(min, maxMin(new_copy, profondeur++));
         }
         return min
       }
