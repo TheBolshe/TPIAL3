@@ -10,7 +10,7 @@ import iia.jeux.modele.CoupJeu;
 import iia.jeux.modele.PlateauJeu;
 import iia.jeux.modele.joueur.Joueur;
 
-public class Minimax implements AlgoJeu {
+public class AlphaBeta implements AlgoJeu {
 
     /** La profondeur de recherche par défaut
      */
@@ -49,23 +49,23 @@ public class Minimax implements AlgoJeu {
   // -------------------------------------------
   // Constructeurs
   // -------------------------------------------
-    public Minimax(Heuristique h, Joueur joueurMax, Joueur joueurMin) {
+    public AlphaBeta(Heuristique h, Joueur joueurMax, Joueur joueurMin) {
         this(h,joueurMax,joueurMin,PROFMAXDEFAUT);
     }
 
-    public Minimax(Heuristique h, Joueur joueurMax, Joueur joueurMin, int profMaxi) {
+    public AlphaBeta(Heuristique h, Joueur joueurMax, Joueur joueurMin, int profMaxi) {
         this.h = h;
         this.joueurMin = joueurMin;
         this.joueurMax = joueurMax;
         profMax = profMaxi;
-//		System.out.println("Initialisation d'un MiniMax de profondeur " + profMax);
+//		System.out.println("Initialisation d'un AlphaBeta de profondeur " + profMax);
     }
 
    // -------------------------------------------
   // Méthodes de l'interface AlgoJeu
   // -------------------------------------------
   /**
-  *   Methode du choix du meilleur coup possible pour le joueur AMI sur un plateau donne avec calcul d'heuristique grace a MiniMax
+  *   Methode du choix du meilleur coup possible pour le joueur AMI sur un plateau donne avec calcul d'heuristique grace a AlphaBeta
   *   @param p le plateau de jeu, noeud de l'arbre dont on veut choisir le meilleur coup parmi les noeud-enfants
   *   @return Le meilleur coup parmi la liste des coups possibles a partir de l'etat p pour le joueur AMI
   */
@@ -81,11 +81,11 @@ public class Minimax implements AlgoJeu {
     // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autre
     // L'un ou l'autre, a voir lequel est le mieux. DEMANDER AU PROF
     int max = Integer.MIN_VALUE;
-    //int max = this.minMax(p, 0);
+    //int max = this.minMax(p, 0, Integer.MAX_VALUE, Integer.MIN_VALUE);
     for (CoupJeu c : coups_possibles) {
       PlateauDominos nouvelle_copie = p.copy();
       nouvelle_copie.joue(this.joueurMax, c);
-      int nouvelle_valeur_max = this.minMax(nouvelle_copie, 0);
+      int nouvelle_valeur_max = this.minMax(nouvelle_copie, 0,  Integer.MAX_VALUE, Integer.MIN_VALUE);
       scores.add(nouvelle_valeur_max);
       if (nouvelle_valeur_max > max) {
         meilleur_coup = c;
@@ -99,7 +99,7 @@ public class Minimax implements AlgoJeu {
    // Méthodes publiques
    // -------------------------------------------
    public String toString() {
-     return "MiniMax(ProfMax="+profMax+")";
+     return "AlphaBeta(ProfMax="+profMax+")";
    }
 
 
@@ -108,7 +108,7 @@ public class Minimax implements AlgoJeu {
   // Méthodes internes
   // -------------------------------------------
 
-    //A vous de jouer pour implanter Minimax
+    //A vous de jouer pour implanter AlphaBeta
 
     /**
     *   Indique si un plateau correspond a une fin de Partie
@@ -119,14 +119,14 @@ public class Minimax implements AlgoJeu {
       p.finDePartie();
     }
 
-    // Minimax est une succession de deux fonctions : maxMin et minMax.
+    // AlphaBeta est une succession de deux fonctions : maxMin et minMax.
 
     /**
-    *   Evaluation de la valeur MiniMax du noeud ami
+    *   Evaluation de la valeur AlphaBeta du noeud AMI
     *   @param p le plateau correspondant au noeud
     *   @return Un entier, la valeur max trouvee.
     **/
-    public int maxMin(PlateauJeu p, int profondeur){
+    public int maxMin(PlateauJeu p, int profondeur, int alpha, int beta){
       // Astuce pour compter le nombre de noeuds
       this.nbnoeuds++;
       if (profondeur >= this.profMax || p.finDePartie() == true) {
@@ -135,30 +135,35 @@ public class Minimax implements AlgoJeu {
         return this.h.eval(p, this.joueurMax);
       }
       else {
-        int max = Integer.MIN_VALUE;
         ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMax);
         for (CoupJeu c : coups_possibles) {
           PlateauDominos new_copy = p.copy();
           new_copy.joue(this.joueurMax,c);
-          max = Math.max(max, minMax(new_copy, profondeur++));
+          alpha = Math.max(alpha, minMax(new_copy, profondeur++, alpha, beta));
+          if (alpha >= beta) {
+            return beta;
+          }
         }
-        return max;
       }
+      return alpha;
     }
 
     /**
-    *   Evaluation de la valeur MiniMax du noeud ennemi
+    *   Evaluation de la valeur AlphaBeta du noeud ennemi
     *   @param p le plateau correspondant au noeud
     *   @return Un entier, la valeur max trouvee.
     **/
-    public int minMax(PlateauJeu p, int profondeur){
+    public int minMax(PlateauJeu p, int profondeur, int alpha, int beta){
       // Astuce pour compter le nombre de noeuds parcourus
       this.nbnoeuds++;
-      int min = 0;
+      // A SUPPRIMER SI ON CHANGE LA LIGNE 166 ET 167
+      // int min = 0;
       // L'ennemi est en fin de partie (plateau = feuille; joueur = ennemi)
       if (profondeur >= this.profMax || p.finDePartie() == true) {
         // Astuce pour compter le nombre de feuilles
         this.nbfeuilles++;
+        // DEMANDER AU PROF S'IL N'Y A PAS UNE ERREUR DANS LE POLY !!!! Et remplacer par la ligne suivante
+        // return this.h.eval(p. this.joueurMin);
         min = this.h.eval(p. this.joueurMin);
       }
       // On simule le coup de ennemi, il doit faire son meilleur coup
@@ -168,9 +173,12 @@ public class Minimax implements AlgoJeu {
         for (CoupJeu c: coups_possibles) {
           PlateauDominos new_copy = p.copy();
           new_copy.joue(this.joueurMin,c);
-          min = Math.min(min, maxMin(new_copy, profondeur++));
+          beta = Math.min(beta, maxMin(new_copy, profondeur++, alpha, beta));
+          if (alpha >= beta) {
+            return alpha;
+          }
+          return beta;
         }
-        return min
       }
     }
 
