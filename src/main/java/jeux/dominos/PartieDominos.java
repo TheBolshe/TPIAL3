@@ -1,6 +1,7 @@
 package jeux.dominos;
 
 import iia.jeux.alg.AlgoJeu;
+import iia.jeux.alg.AlphaBeta;
 import iia.jeux.alg.Minimax;
 import iia.jeux.modele.CoupJeu;
 import iia.jeux.modele.PlateauJeu;

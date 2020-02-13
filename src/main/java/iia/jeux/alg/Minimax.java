@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import iia.jeux.modele.CoupJeu;
 import iia.jeux.modele.PlateauJeu;
 import iia.jeux.modele.joueur.Joueur;
+import jeux.dominos.PlateauDominos;
 
 public class Minimax implements AlgoJeu {
 
@@ -71,28 +72,49 @@ public class Minimax implements AlgoJeu {
      *   @return Le meilleur coup parmi la liste des coups possibles a partir de l'etat p pour le joueur AMI
      */
     public CoupJeu meilleurCoup(PlateauJeu p) {
+        nbnoeuds = 0;
+        nbfeuilles = 0;
+        ArrayList<CoupJeu> coupsPossibles = p.coupsPossibles(joueurMax);
+        CoupJeu c = coupsPossibles.get(0);
+        PlateauJeu s = p.copy();
+        int max = minMax(s, 0);
+        System.out.println(max);
+        CoupJeu meilleurCoup = c;
+        coupsPossibles.remove(c);
+        for (CoupJeu i : coupsPossibles) {
+            PlateauJeu nS = s.copy();
+            nS.joue(joueurMax, i);
+            int newVal = minMax(s, 0);
+            System.out.println(newVal);
+            if (newVal > max) {
+                meilleurCoup = i;
+                max = newVal;
+            }
+        }
+        return meilleurCoup;
+    }
+
+    public CoupJeu meilleurCoupOld(PlateauJeu p) {
 
         /* A vous de compléter le corps de ce fichier */
         nbfeuilles = 0;
-        nbnoeuds = 1;
+        nbnoeuds = 0;
         // (c,s) <- debut(coupsPossibles) On initialse les tableau de coups et des scores correspondants
         ArrayList<CoupJeu> coups_possibles = p.coupsPossibles(joueurMax);
-        //ArrayList<Integer> scores = new ArrayList<Integer>();
 
         // On initialise par le premier coup par defaut.
-        CoupJeu meilleur_coup = coups_possibles.get(0);
+        CoupJeu meilleur_coup = null;
 
         // Ca va etre la valeur heuristique correspondante au meilleur coup.
         // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autre
         PlateauJeu s = p.copy();
-        s.joue(joueurMax, meilleur_coup);
-        int max = this.minMax(s, 0);
+        //s.joue(joueurMax, meilleur_coup);
+        //int max = this.minMax(s, 0);
+        int max = Integer.MIN_VALUE;
 
         for (CoupJeu c : coups_possibles) {
-            PlateauJeu nouvelle_copie = p.copy();
-            nouvelle_copie.joue(this.joueurMax, c);
-            int nouvelle_valeur_max = this.minMax(nouvelle_copie, 0);
-            //scores.add(nouvelle_valeur_max);
+            s.joue(this.joueurMax, c);
+            int nouvelle_valeur_max = this.minMax(s, 0);
             if (nouvelle_valeur_max > max) {
                 meilleur_coup = c;
                 max = nouvelle_valeur_max;
@@ -134,6 +156,7 @@ public class Minimax implements AlgoJeu {
      *   @return Un entier, la valeur max trouvee.
      **/
     private int maxMin(PlateauJeu p, int prof) {
+        //System.out.print(prof + " ");
         if (p.finDePartie() || prof >= profMax) {
             nbfeuilles++;
             return h.eval(p, joueurMax);
@@ -141,9 +164,9 @@ public class Minimax implements AlgoJeu {
             nbnoeuds++;
             int max = Integer.MIN_VALUE;
             for (CoupJeu c : p.coupsPossibles(joueurMax)) {
-                PlateauJeu nP = p.copy();
-                nP.joue(joueurMax, c);
-                max = Math.max(max, minMax(nP, prof++));
+                PlateauJeu s = p.copy();
+                s.joue(joueurMax, c);
+                max = Math.max(max, minMax(s, prof++));
             }
             return max;
         }
@@ -155,6 +178,7 @@ public class Minimax implements AlgoJeu {
      *   @return Un entier, la valeur max trouvee.
      **/
     private int minMax(PlateauJeu p, int prof) {
+        //System.out.print(prof + " ");
         if (p.finDePartie() || prof >= profMax) {
             nbfeuilles++;
             return h.eval(p, joueurMin);
@@ -162,9 +186,9 @@ public class Minimax implements AlgoJeu {
             nbnoeuds++;
             int min = Integer.MAX_VALUE;
             for (CoupJeu c : p.coupsPossibles(joueurMin)) {
-                PlateauJeu nP = p.copy();
-                nP.joue(joueurMin, c);
-                min = Math.min(min, maxMin(nP, prof++));
+                PlateauJeu s = p.copy();
+                s.joue(joueurMin, c);
+                min = Math.min(min, maxMin(s, prof++));
             }
             return min;
         }
