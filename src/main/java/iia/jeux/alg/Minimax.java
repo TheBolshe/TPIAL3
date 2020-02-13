@@ -72,16 +72,18 @@ public class Minimax implements AlgoJeu {
   public CoupJeu meilleurCoup(PlateauJeu p) {
 
     /* A vous de compléter le corps de ce fichier */
+
     // (c,s) <- debut(coupsPossibles) On initialse les tableau de coups et des scores correspondants
     ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMax);
     ArrayList<Integer> scores = new ArrayList<Integer>;
+
     // On initialise par le premier coup par defaut.
     CoupJeu meilleur_coup = coups_possibles.get(0);
+
     // Ca va etre la valeur heuristique correspondante au meilleur coup.
     // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autre
-    // L'un ou l'autre, a voir lequel est le mieux. DEMANDER AU PROF
-    int max = Integer.MIN_VALUE;
-    //int max = this.minMax(p, 0);
+    int max = this.minMax(meilleur_coup, 0);
+
     for (CoupJeu c : coups_possibles) {
       PlateauDominos nouvelle_copie = p.copy();
       nouvelle_copie.joue(this.joueurMax, c);
@@ -92,6 +94,17 @@ public class Minimax implements AlgoJeu {
         max = nouvelle_valeur_max;
       }
     }
+
+    // Affichage des informations importantes
+
+    System.out.println("Liste des coups possibles");
+    for (CoupJeu c: coups_possibles) {
+      System.out.println(c.toString());
+    }
+    System.out.println("Le meilleur coup est : " + meilleur_coup);
+    System.out.println("Nombre de noeuds parcourus : " + this.nbnoeuds);
+    System.out.println("Nombre de noeuds decouvertes : " + this.nbfeuilles);
+
     return meilleur_coup;
    }
 
@@ -127,14 +140,15 @@ public class Minimax implements AlgoJeu {
     *   @return Un entier, la valeur max trouvee.
     **/
     public int maxMin(PlateauJeu p, int profondeur){
-      // Astuce pour compter le nombre de noeuds
-      this.nbnoeuds++;
       if (profondeur >= this.profMax || p.finDePartie() == true) {
         // Astuce pour compter le nombre de feuilles
         this.nbfeuilles++;
+
         return this.h.eval(p, this.joueurMax);
       }
       else {
+        // Astuce pour compter le nombre de noeuds
+        this.nbnoeuds++;
         int max = Integer.MIN_VALUE;
         ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMax);
         for (CoupJeu c : coups_possibles) {
@@ -142,6 +156,7 @@ public class Minimax implements AlgoJeu {
           new_copy.joue(this.joueurMax,c);
           max = Math.max(max, minMax(new_copy, profondeur++));
         }
+
         return max;
       }
     }
@@ -152,8 +167,6 @@ public class Minimax implements AlgoJeu {
     *   @return Un entier, la valeur max trouvee.
     **/
     public int minMax(PlateauJeu p, int profondeur){
-      // Astuce pour compter le nombre de noeuds parcourus
-      this.nbnoeuds++;
       int min = 0;
       // L'ennemi est en fin de partie (plateau = feuille; joueur = ennemi)
       if (profondeur >= this.profMax || p.finDePartie() == true) {
@@ -163,6 +176,8 @@ public class Minimax implements AlgoJeu {
       }
       // On simule le coup de ennemi, il doit faire son meilleur coup
       else {
+        // Astuce pour compter le nombre de noeuds parcourus
+        this.nbnoeuds++;
         min = Integer.MIN_VALUE;
         ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMin);
         for (CoupJeu c: coups_possibles) {
