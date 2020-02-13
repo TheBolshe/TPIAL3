@@ -73,22 +73,19 @@ public class AlphaBeta implements AlgoJeu {
 
     /* A vous de compléter le corps de ce fichier */
 
-    // (c,s) <- debut(coupsPossibles) On initialse les tableau de coups et des scores correspondants
-    ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMax);
-    ArrayList<Integer> scores = new ArrayList<Integer>;
-
     // On initialise par le premier coup par defaut.
-    CoupJeu meilleur_coup = coups_possibles.get(0);
+    CoupJeu meilleur_coup = p.coupsPossibles(joueurMax).get(0);
 
     // Ca va etre la valeur heuristique correspondante au meilleur coup.
-    // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autre
-    int max = this.minMax(meilleur_coup, 0, Integer.MAX_VALUE, Integer.MIN_VALUE);
+    // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autres
+      PlateauJeu s = p.copy();
+      s.joue(joueurMax, meilleur_coup);
+    int max = this.minMax(s, 0, Integer.MAX_VALUE, Integer.MIN_VALUE);
 
-    for (CoupJeu c : coups_possibles) {
-      PlateauDominos nouvelle_copie = p.copy();
+    for (CoupJeu c : p.coupsPossibles(joueurMax)) {
+      PlateauJeu nouvelle_copie = p.copy();
       nouvelle_copie.joue(this.joueurMax, c);
       int nouvelle_valeur_max = this.minMax(nouvelle_copie, 0,  Integer.MAX_VALUE, Integer.MIN_VALUE);
-      scores.add(nouvelle_valeur_max);
       if (nouvelle_valeur_max > max) {
         meilleur_coup = c;
         max = nouvelle_valeur_max;
@@ -98,7 +95,7 @@ public class AlphaBeta implements AlgoJeu {
     // Affichage des informations importantes
 
     System.out.println("Liste des coups possibles");
-    for (CoupJeu c: coups_possibles) {
+    for (CoupJeu c: p.coupsPossibles(joueurMax)) {
       System.out.println(c.toString());
     }
     System.out.println("Le meilleur coup est : " + meilleur_coup);
@@ -123,15 +120,6 @@ public class AlphaBeta implements AlgoJeu {
 
     //A vous de jouer pour implanter AlphaBeta
 
-    /**
-    *   Indique si un plateau correspond a une fin de Partie
-    *   @param p le plateau qu'on evalue
-    *   @return Le plateau correspond a une situation de fin de partie ou pas
-    **/
-    public boolean endGame(PlateauJeu p){
-      p.finDePartie();
-    }
-
     // AlphaBeta est une succession de deux fonctions : maxMin et minMax.
 
     /**
@@ -140,17 +128,15 @@ public class AlphaBeta implements AlgoJeu {
     *   @return Un entier, la valeur max trouvee.
     **/
     public int maxMin(PlateauJeu p, int profondeur, int alpha, int beta){
-      if (profondeur >= this.profMax || p.finDePartie() == true) {
+      if (profondeur >= this.profMax || p.finDePartie()) {
         // Astuce pour compter le nombre de feuilles
         this.nbfeuilles++;
         return this.h.eval(p, this.joueurMax);
-      }
-      else {
+      } else {
         // Astuce pour compter le nombre de noeuds
         this.nbnoeuds++;
-        ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMax);
-        for (CoupJeu c : coups_possibles) {
-          PlateauDominos new_copy = p.copy();
+        for (CoupJeu c : p.coupsPossibles(joueurMax)) {
+          PlateauJeu new_copy = p.copy();
           new_copy.joue(this.joueurMax,c);
           alpha = Math.max(alpha, minMax(new_copy, profondeur++, alpha, beta));
           if (alpha >= beta) {
@@ -167,31 +153,25 @@ public class AlphaBeta implements AlgoJeu {
     *   @return Un entier, la valeur max trouvee.
     **/
     public int minMax(PlateauJeu p, int profondeur, int alpha, int beta){
-      // A SUPPRIMER SI ON CHANGE LA LIGNE 177 ET 178
-      // int min = 0;
       // L'ennemi est en fin de partie (plateau = feuille; joueur = ennemi)
-      if (profondeur >= this.profMax || p.finDePartie() == true) {
+      if (profondeur >= this.profMax || p.finDePartie()) {
         // Astuce pour compter le nombre de feuilles
         this.nbfeuilles++;
-        // DEMANDER AU PROF S'IL N'Y A PAS UNE ERREUR DANS LE POLY !!!! Et remplacer par la ligne suivante
-        // return this.h.eval(p. this.joueurMin);
-        min = this.h.eval(p. this.joueurMin);
+        return this.h.eval(p, this.joueurMin);
       }
       // On simule le coup de ennemi, il doit faire son meilleur coup
       else {
         // Astuce pour compter le nombre de noeuds parcourus
         this.nbnoeuds++;
-        min = Integer.MIN_VALUE;
-        ArrayList<CoupJeu> coups_possibles = p.lesCoupsPossibles(p.joueurMin);
-        for (CoupJeu c: coups_possibles) {
-          PlateauDominos new_copy = p.copy();
+        for (CoupJeu c: p.coupsPossibles(joueurMin)) {
+          PlateauJeu new_copy = p.copy();
           new_copy.joue(this.joueurMin,c);
           beta = Math.min(beta, maxMin(new_copy, profondeur++, alpha, beta));
           if (alpha >= beta) {
             return alpha;
           }
-          return beta;
         }
+        return beta;
       }
     }
 
