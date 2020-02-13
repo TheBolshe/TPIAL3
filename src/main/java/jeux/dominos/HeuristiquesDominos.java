@@ -18,7 +18,7 @@ public class HeuristiquesDominos{
 				if (p.nbCoupsNoir() == 0) {
 					return Integer.MAX_VALUE;
 				}
-				return ((PlateauDominos) p).nbCoupsBlanc() - ((PlateauDominos) p).nbCoupsNoir();
+				return p.nbCoupsBlanc() - p.nbCoupsNoir();
 			}
 			else {
 				if (p.nbCoupsNoir() == 0) {
@@ -27,7 +27,7 @@ public class HeuristiquesDominos{
 				if (p.nbCoupsBlanc() == 0) {
 					return Integer.MIN_VALUE;
 				}
-				return ((PlateauDominos) p).nbCoupsBlanc() - ((PlateauDominos) p).nbCoupsNoir();
+				return p.nbCoupsBlanc() - p.nbCoupsNoir();
 			}
 		}
 	};
@@ -43,7 +43,7 @@ public class HeuristiquesDominos{
 				if (p.nbCoupsNoir() == 0) {
 					return Integer.MIN_VALUE;
 				}
-				return ((PlateauDominos) p).nbCoupsNoir() - ((PlateauDominos) p).nbCoupsBlanc();
+				return p.nbCoupsNoir() - p.nbCoupsBlanc();
 			}
 			else {
 				if (p.nbCoupsNoir() == 0) {
@@ -52,7 +52,7 @@ public class HeuristiquesDominos{
 				if (p.nbCoupsBlanc() == 0) {
 					return Integer.MAX_VALUE;
 				}
-				return ((PlateauDominos) p).nbCoupsNoir() - ((PlateauDominos) p).nbCoupsBlanc();
+				return p.nbCoupsNoir() - p.nbCoupsBlanc();
 			}
 	}
 };
