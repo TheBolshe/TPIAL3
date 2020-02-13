@@ -9,7 +9,8 @@ public class HeuristiquesDominos{
 
 	public static Heuristique hblanc = new Heuristique(){
 
-		public int eval(PlateauJeu p, Joueur j){
+		public int eval(PlateauJeu op, Joueur j){
+			PlateauDominos p = ((PlateauDominos) op);
 			if (p.isJoueurBlanc(j)) {
 				if (p.nbCoupsBlanc() == 0) {
 					return Integer.MIN_VALUE;
@@ -21,10 +22,10 @@ public class HeuristiquesDominos{
 			}
 			else {
 				if (p.nbCoupsNoir() == 0) {
-					return MAX_VALUE;
+					return Integer.MAX_VALUE;
 				}
 				if (p.nbCoupsBlanc() == 0) {
-					return MIN_VALUE;
+					return Integer.MIN_VALUE;
 				}
 				return ((PlateauDominos) p).nbCoupsBlanc() - ((PlateauDominos) p).nbCoupsNoir();
 			}
@@ -33,7 +34,8 @@ public class HeuristiquesDominos{
 
 	public static  Heuristique hnoir = new Heuristique(){
 
-		public int eval(PlateauJeu p, Joueur j){
+		public int eval(PlateauJeu op, Joueur j){
+			PlateauDominos p = ((PlateauDominos) op);
 			if (p.isJoueurNoir(j)) {
 				if (p.nbCoupsBlanc() == 0) {
 					return Integer.MAX_VALUE;
@@ -45,10 +47,10 @@ public class HeuristiquesDominos{
 			}
 			else {
 				if (p.nbCoupsNoir() == 0) {
-					return MIN_VALUE;
+					return Integer.MIN_VALUE;
 				}
 				if (p.nbCoupsBlanc() == 0) {
-					return MAX_VALUE;
+					return Integer.MAX_VALUE;
 				}
 				return ((PlateauDominos) p).nbCoupsNoir() - ((PlateauDominos) p).nbCoupsBlanc();
 			}
