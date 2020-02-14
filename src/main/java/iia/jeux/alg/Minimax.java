@@ -5,6 +5,7 @@
 package iia.jeux.alg;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import iia.jeux.modele.CoupJeu;
 import iia.jeux.modele.PlateauJeu;
@@ -46,6 +47,8 @@ public class Minimax implements AlgoJeu {
      */
     private int nbfeuilles;
 
+    Random rand = new Random();
+
 
     // -------------------------------------------
     // Constructeurs
@@ -76,17 +79,23 @@ public class Minimax implements AlgoJeu {
         nbfeuilles = 0;
         ArrayList<CoupJeu> coupsPossibles = p.coupsPossibles(joueurMax);
         int max = Integer.MIN_VALUE;
-        CoupJeu meilleurCoup = coupsPossibles.get(0);
+        ArrayList<CoupJeu> listeMeilleursCoups = new ArrayList<CoupJeu>();
+        listeMeilleursCoups.add(coupsPossibles.get(0));
         for (CoupJeu i : coupsPossibles) {
             PlateauJeu s = p.copy();
             s.joue(joueurMax, i);
             int newVal = minMax(s, 1);
             System.out.println("max = " + max + " vs " + newVal);
             if (newVal > max) {
-                meilleurCoup = i;
+                listeMeilleursCoups.clear();
+                listeMeilleursCoups.add(i);
                 max = newVal;
+            } else if (newVal == max) {
+                listeMeilleursCoups.add(i);
             }
         }
+        System.out.println(listeMeilleursCoups.toString());
+        CoupJeu meilleurCoup = listeMeilleursCoups.get(rand.nextInt(listeMeilleursCoups.size()));
         System.out.println("Le meilleur coup est : " + meilleurCoup);
         System.out.println("Nombre de noeuds parcourus : " + this.nbnoeuds);
         System.out.println("Nombre de noeuds decouvertes : " + this.nbfeuilles);
