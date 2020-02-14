@@ -75,22 +75,21 @@ public class Minimax implements AlgoJeu {
         nbnoeuds = 0;
         nbfeuilles = 0;
         ArrayList<CoupJeu> coupsPossibles = p.coupsPossibles(joueurMax);
-        CoupJeu c = coupsPossibles.get(0);
-        PlateauJeu s = p.copy();
-        int max = minMax(s, 0);
-        System.out.println(max);
-        CoupJeu meilleurCoup = c;
-        coupsPossibles.remove(c);
+        int max = Integer.MIN_VALUE;
+        CoupJeu meilleurCoup = coupsPossibles.get(0);
         for (CoupJeu i : coupsPossibles) {
-            PlateauJeu nS = s.copy();
-            nS.joue(joueurMax, i);
-            int newVal = minMax(s, 0);
-            System.out.println(newVal);
+            PlateauJeu s = p.copy();
+            s.joue(joueurMax, i);
+            int newVal = minMax(s, 1);
+            System.out.println("max = " + max + " vs " + newVal);
             if (newVal > max) {
                 meilleurCoup = i;
                 max = newVal;
             }
         }
+        System.out.println("Le meilleur coup est : " + meilleurCoup);
+        System.out.println("Nombre de noeuds parcourus : " + this.nbnoeuds);
+        System.out.println("Nombre de noeuds decouvertes : " + this.nbfeuilles);
         return meilleurCoup;
     }
 
@@ -148,6 +147,10 @@ public class Minimax implements AlgoJeu {
 
     //A vous de jouer pour implanter Minimax
 
+    private boolean etatFinal (PlateauJeu p, int prof) {
+        return (p.finDePartie() || prof >= profMax);
+    }
+
     // Minimax est une succession de deux fonctions : maxMin et minMax.
 
     /**
@@ -157,9 +160,12 @@ public class Minimax implements AlgoJeu {
      **/
     private int maxMin(PlateauJeu p, int prof) {
         //System.out.print(prof + " ");
-        if (p.finDePartie() || prof >= profMax) {
+        //System.out.println(p.finDePartie() + " " + (prof >= profMax) + " " + etatFinal(p, prof));
+        if (etatFinal(p, prof)) {
             nbfeuilles++;
-            return h.eval(p, joueurMax);
+            int eval = h.eval(p, joueurMax);
+            //System.out.println(eval);
+            return eval;
         } else {
             nbnoeuds++;
             int max = Integer.MIN_VALUE;
@@ -168,6 +174,7 @@ public class Minimax implements AlgoJeu {
                 s.joue(joueurMax, c);
                 max = Math.max(max, minMax(s, prof++));
             }
+            //System.out.println(max);
             return max;
         }
     }
@@ -179,9 +186,12 @@ public class Minimax implements AlgoJeu {
      **/
     private int minMax(PlateauJeu p, int prof) {
         //System.out.print(prof + " ");
-        if (p.finDePartie() || prof >= profMax) {
+        //System.out.println(p.finDePartie() + " " + (prof >= profMax) + " " + etatFinal(p, prof));
+        if (etatFinal(p, prof)) {
             nbfeuilles++;
-            return h.eval(p, joueurMin);
+            int eval = h.eval(p, joueurMin);
+            //System.out.println(eval);
+            return eval;
         } else {
             nbnoeuds++;
             int min = Integer.MAX_VALUE;
@@ -190,6 +200,7 @@ public class Minimax implements AlgoJeu {
                 s.joue(joueurMin, c);
                 min = Math.min(min, maxMin(s, prof++));
             }
+            //.out.println(min);
             return min;
         }
     }
