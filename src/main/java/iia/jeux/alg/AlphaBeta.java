@@ -5,6 +5,7 @@
 package iia.jeux.alg;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import iia.jeux.modele.CoupJeu;
 import iia.jeux.modele.PlateauJeu;
@@ -45,6 +46,8 @@ public class AlphaBeta implements AlgoJeu {
      */
     private int nbfeuilles;
 
+    Random rand = new Random();
+
 
     // -------------------------------------------
     // Constructeurs
@@ -74,35 +77,39 @@ public class AlphaBeta implements AlgoJeu {
 
         /* A vous de compléter le corps de ce fichier */
 
+        nbfeuilles = 0;
+        nbnoeuds = 0;
         // On initialise par le premier coup par defaut.
-        CoupJeu meilleur_coup = p.coupsPossibles(joueurMax).get(0);
+        ArrayList<CoupJeu> coupsPossibles = p.coupsPossibles(joueurMax);
+        ArrayList<CoupJeu> listeMeilleursCoups = new ArrayList<CoupJeu>();
 
         // Ca va etre la valeur heuristique correspondante au meilleur coup.
         // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autres
-        PlateauJeu s = p.copy();
-        s.joue(joueurMax, meilleur_coup);
-        int max = this.minMax(s, 0, Integer.MAX_VALUE, Integer.MIN_VALUE);
+        int max = Integer.MIN_VALUE;
 
         for (CoupJeu c : p.coupsPossibles(joueurMax)) {
+            System.out.print("=");
+            PlateauJeu s = p.copy();
             s.joue(this.joueurMax, c);
-            int nouvelle_valeur_max = this.minMax(s, 0, Integer.MAX_VALUE, Integer.MIN_VALUE);
-            if (nouvelle_valeur_max > max) {
-                meilleur_coup = c;
-                max = nouvelle_valeur_max;
+            int newVal = this.minMax(s, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            if (newVal > max) {
+                listeMeilleursCoups.clear();
+                listeMeilleursCoups.add(c);
+                max = newVal;
+            } else if (newVal == max) {
+                listeMeilleursCoups.add(c);
             }
         }
+        System.out.println();
+        CoupJeu meilleurCoup = listeMeilleursCoups.get(rand.nextInt(listeMeilleursCoups.size()));
 
         // Affichage des informations importantes
 
-        System.out.println("Liste des coups possibles");
-        for (CoupJeu c : p.coupsPossibles(joueurMax)) {
-            System.out.println(c.toString());
-        }
-        System.out.println("Le meilleur coup est : " + meilleur_coup);
+        System.out.println("Le meilleur coup est : " + meilleurCoup);
         System.out.println("Nombre de noeuds parcourus : " + this.nbnoeuds);
         System.out.println("Nombre de noeuds decouvertes : " + this.nbfeuilles);
 
-        return meilleur_coup;
+        return meilleurCoup;
     }
 
     // -------------------------------------------

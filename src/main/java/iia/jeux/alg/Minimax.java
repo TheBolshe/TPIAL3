@@ -75,71 +75,33 @@ public class Minimax implements AlgoJeu {
      *   @return Le meilleur coup parmi la liste des coups possibles a partir de l'etat p pour le joueur AMI
      */
     public CoupJeu meilleurCoup(PlateauJeu p) {
+        //Initialisation du comptage de noeuds/feilles pour l'exploration
         nbnoeuds = 0;
         nbfeuilles = 0;
+        //récuperation des coups possible pour le joueur ami
         ArrayList<CoupJeu> coupsPossibles = p.coupsPossibles(joueurMax);
         int max = Integer.MIN_VALUE;
         ArrayList<CoupJeu> listeMeilleursCoups = new ArrayList<CoupJeu>();
-        listeMeilleursCoups.add(coupsPossibles.get(0));
-        for (CoupJeu i : coupsPossibles) {
+        for (CoupJeu c : coupsPossibles) {
             PlateauJeu s = p.copy();
-            s.joue(joueurMax, i);
+            s.joue(joueurMax, c);
             int newVal = minMax(s, 1);
-            System.out.println("max = " + max + " vs " + newVal);
+            //System.out.println("max = " + max + " vs " + newVal);
             if (newVal > max) {
                 listeMeilleursCoups.clear();
-                listeMeilleursCoups.add(i);
+                listeMeilleursCoups.add(c);
                 max = newVal;
             } else if (newVal == max) {
-                listeMeilleursCoups.add(i);
+                listeMeilleursCoups.add(c);
             }
         }
-        System.out.println(listeMeilleursCoups.toString());
+        //System.out.println(listeMeilleursCoups.toString());
         CoupJeu meilleurCoup = listeMeilleursCoups.get(rand.nextInt(listeMeilleursCoups.size()));
+
         System.out.println("Le meilleur coup est : " + meilleurCoup);
         System.out.println("Nombre de noeuds parcourus : " + this.nbnoeuds);
         System.out.println("Nombre de noeuds decouvertes : " + this.nbfeuilles);
         return meilleurCoup;
-    }
-
-    public CoupJeu meilleurCoupOld(PlateauJeu p) {
-
-        /* A vous de compléter le corps de ce fichier */
-        nbfeuilles = 0;
-        nbnoeuds = 0;
-        // (c,s) <- debut(coupsPossibles) On initialse les tableau de coups et des scores correspondants
-        ArrayList<CoupJeu> coups_possibles = p.coupsPossibles(joueurMax);
-
-        // On initialise par le premier coup par defaut.
-        CoupJeu meilleur_coup = null;
-
-        // Ca va etre la valeur heuristique correspondante au meilleur coup.
-        // C'est aussi ce qui va nous permettre de comparer pour effectivement savoir si un copu est mieux qu'un autre
-        PlateauJeu s = p.copy();
-        //s.joue(joueurMax, meilleur_coup);
-        //int max = this.minMax(s, 0);
-        int max = Integer.MIN_VALUE;
-
-        for (CoupJeu c : coups_possibles) {
-            s.joue(this.joueurMax, c);
-            int nouvelle_valeur_max = this.minMax(s, 0);
-            if (nouvelle_valeur_max > max) {
-                meilleur_coup = c;
-                max = nouvelle_valeur_max;
-            }
-        }
-
-        // Affichage des informations importantes
-
-        System.out.println("Liste des coups possibles");
-        for (CoupJeu c : coups_possibles) {
-            System.out.println(c.toString());
-        }
-        System.out.println("Le meilleur coup est : " + meilleur_coup);
-        System.out.println("Nombre de noeuds parcourus : " + this.nbnoeuds);
-        System.out.println("Nombre de noeuds decouvertes : " + this.nbfeuilles);
-
-        return meilleur_coup;
     }
 
     // -------------------------------------------
@@ -156,10 +118,6 @@ public class Minimax implements AlgoJeu {
 
     //A vous de jouer pour implanter Minimax
 
-    private boolean etatFinal (PlateauJeu p, int prof) {
-        return (p.finDePartie() || prof >= profMax);
-    }
-
     // Minimax est une succession de deux fonctions : maxMin et minMax.
 
     /**
@@ -170,7 +128,7 @@ public class Minimax implements AlgoJeu {
     private int maxMin(PlateauJeu p, int prof) {
         //System.out.print(prof + " ");
         //System.out.println(p.finDePartie() + " " + (prof >= profMax) + " " + etatFinal(p, prof));
-        if (etatFinal(p, prof)) {
+        if (p.finDePartie() || prof >= profMax) {
             nbfeuilles++;
             int eval = h.eval(p, joueurMax);
             //System.out.println(eval);
@@ -196,7 +154,7 @@ public class Minimax implements AlgoJeu {
     private int minMax(PlateauJeu p, int prof) {
         //System.out.print(prof + " ");
         //System.out.println(p.finDePartie() + " " + (prof >= profMax) + " " + etatFinal(p, prof));
-        if (etatFinal(p, prof)) {
+        if (p.finDePartie() || prof >= profMax) {
             nbfeuilles++;
             int eval = h.eval(p, joueurMin);
             //System.out.println(eval);
